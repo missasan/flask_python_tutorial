@@ -1,0 +1,7 @@
+[0m2021.05.06 14:34:09 INFO  Started: Metals version 0.10.2 in workspace '/Users/missasan/study/udemy/flask_wtform_tutorial' for client vscode 1.56.0.[0m
+[0m2021.05.06 14:34:11 INFO  time: initialize in 2.08s[0m
+[0m2021.05.06 14:34:11 WARN  Build server is not auto-connectable.[0m
+[0m2021.05.06 14:34:11 WARN  no build tool detected in workspace '/Users/missasan/study/udemy/flask_wtform_tutorial'. The most common cause for this problem is that the editor was opened in the wrong working directory, for example if you use sbt then the workspace directory should contain build.sbt. [0m
+5月 07, 2021 11:00:45 午前 org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+情報: Unsupported notification method: $/setTraceNotification
+[0m2021.05.07 18:06:06 INFO  shutting down Metals[0m
