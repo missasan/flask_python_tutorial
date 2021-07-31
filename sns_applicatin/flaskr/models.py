@@ -26,6 +26,10 @@ class User(UserMixin, db.Model):
     create_at = db.Column(db.DateTime, default=datetime.now)
     update_at = db.Column(db.DateTime, default=datetime.now)
 
+    @classmethod
+    def select_user_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
+
 
 class PasswordResetToken(db.Model):
 
