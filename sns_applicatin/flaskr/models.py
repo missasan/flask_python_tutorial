@@ -1,3 +1,4 @@
+# models.py
 from flaskr import db, login_manager
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -11,7 +12,7 @@ def load_user(user_id):
 
 class User(UserMixin, db.Model):
 
-    __tablename__ == 'users'
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True)
@@ -58,7 +59,7 @@ class PasswordResetToken(db.Model):
         db.String(64),
         unique=True,
         index=True,
-        serve_default=str(uuid4)
+        server_default=str(uuid4)
     )
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     expire_at = db.Column(db.DateTime, default=datetime.now)

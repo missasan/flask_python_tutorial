@@ -1,3 +1,4 @@
+# views.py
 from flask import (
     Blueprint, abort, request, render_template,
     redirect, url_for, flash
@@ -28,7 +29,7 @@ def logout():
 def login():
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
-        user User.select_user_by_email(form.email.data)
+        user =  User.select_user_by_email(form.email.data)
         if user and user.is_active and user.validate_password(form.password.data):
             login_user(user, remember=True)
             next = request.args.get('next')
