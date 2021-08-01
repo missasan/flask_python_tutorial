@@ -39,6 +39,14 @@ class User(UserMixin, db.Model):
     
     def create_new_user(self):
         db.session.add(self)
+    
+    @classmethod
+    def select_user_by_id(cls, id):
+        return cls.query.get(id)
+    
+    def save_new_password(self, new_password):
+        self.password = generate_password_hash(new_password)
+        self.is_active = True
 
 # パスワードリセット時に利用する
 class PasswordResetToken(db.Model):
@@ -73,3 +81,13 @@ class PasswordResetToken(db.Model):
         )
         db.session.add(new_token)
         return token
+    
+    @classmethod
+    def get_user_id_by_token(cls, token):
+        now = datetime.now()
+        record = cls.query.filter_by(token=str(token)).filter(cls.expire_at > now).first()
+        return record.user_id
+    
+    @classmethod
+    def delete_token(cls, token):
+        cls.query.filter_by(token=str(token)).delete()

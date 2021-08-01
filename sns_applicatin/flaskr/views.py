@@ -10,7 +10,7 @@ from flaskr.models import (
 from flaskr import db
 
 from flaskr.forms import (
-    LoginForm, RegisterForm
+    LoginForm, RegisterForm, ResetPasswordForm
 )
 
 bp = Blueprint('app', __name__, url_prefix='')
@@ -65,3 +65,20 @@ def register():
         flash('パスワード設定用のURLをお送りしました。ご確認ください')
         return redirect(url_for('app.login'))
     return render_template('register.html', form=form)
+
+@bp.route('/resest_password/<uuid:token>', methods=['POST', 'GET'])
+def reset_password(token):
+    form = ResetPasswordForm(request.form)
+    reset_user_id = PasswordResetToken.get_user_id_by_token(token)
+    if not reset_user_id:
+        abort(500)
+    if request.method == 'POST' and form.validate():
+        password = form.password.data
+        user = User.select_user_by_id(reset_user_id)
+        with db.session.begin(subtransactions=True):
+            user.save_new_password(password)
+            PasswordResetToken.delete_token(token)
+        db.session.commit()
+        flash('パスワードを更新しました')
+        return redirect(url_for('app.login'))
+    return render_template('reset_password.html', form=form)
