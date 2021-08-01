@@ -5,7 +5,7 @@ from wtforms.fields import (
 )
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms import ValidationError
-from flaskr.models import User
+from flaskr.models import PasswordResetToken, User
 
 # ログイン用のForm
 class LoginForm(Form):
@@ -31,3 +31,17 @@ class RegisterForm(Form):
     def validate_email(self, field):
         if User.select_user_by_email(field.data):
             raise ValidationError('メールアドレスはすでに登録されています')
+
+# パスワード設定用のフォーム
+class ResetPasswordForm(Form):
+    passowrd = PasswordField(
+        'パスワード: ', 
+        validators=[DataRequired(), EqualTo('confirm_password', message='パスワードが一致しません')]
+    )
+    confirm_password = PasswordField(
+        'パスワード確認: ', validators=[DataRequired()]
+    )
+    submit = SubmitField('パスワードを更新する')
+    def validate_password(self, field):
+        if len(field.data) < 8:
+            raise ValidationError('パスワードは8文字以上です')
