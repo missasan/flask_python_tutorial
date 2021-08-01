@@ -35,7 +35,7 @@ class RegisterForm(Form):
 
 # パスワード設定用のフォーム
 class ResetPasswordForm(Form):
-    passowrd = PasswordField(
+    password = PasswordField(
         'パスワード: ', 
         validators=[DataRequired(), EqualTo('confirm_password', message='パスワードが一致しません')]
     )

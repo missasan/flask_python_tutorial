@@ -52,7 +52,7 @@ def register():
             username = form.username.data,
             email = form.email.data
         )
-        with db.session.begin(subtransaction=True):
+        with db.session.begin(subtransactions=True):
             user.create_new_user()
         db.session.commit()
         token = ''
@@ -67,7 +67,7 @@ def register():
         return redirect(url_for('app.login'))
     return render_template('register.html', form=form)
 
-@bp.route('/resest_password/<uuid:token>', methods=['POST', 'GET'])
+@bp.route('/reset_password/<uuid:token>', methods=['POST', 'GET'])
 def reset_password(token):
     form = ResetPasswordForm(request.form)
     reset_user_id = PasswordResetToken.get_user_id_by_token(token)
