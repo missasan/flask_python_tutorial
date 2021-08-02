@@ -1,5 +1,6 @@
 # views.py
 from datetime import datetime
+from operator import sub
 
 from flask import (
     Blueprint, abort, request, render_template,
@@ -16,7 +17,7 @@ from flaskr import db
 
 from flaskr.forms import (
     LoginForm, RegisterForm, ResetPasswordForm,
-    ForgotPasswordForm, UserForm
+    ForgotPasswordForm, UserForm, ChangePasswordForm
 )
 
 bp = Blueprint('app', __name__, url_prefix='')
@@ -119,9 +120,23 @@ def user():
             file = request.files[form.picture_path.name].read()
             if file:
                 file_name = user_id + '_' + str(int(datetime.now().timestamp())) + '.jpg'
-            picture_path = 'flaskr/static/user_image' + file_name
+            picture_path = 'flaskr/static/user_image/' + file_name
             open(picture_path, 'wb').write(file)
             user.picture_path = 'user_image/' + file_name
         db.session.commit()
         flash('ユーザー情報の更新に成功しました')
     return render_template('user.html', form=form)
+
+@bp.route('change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User.select_user_by_id(current_user.get_id())
+        password = form.password.data
+        with db.session.begin(subtransactions=True):
+            user.save_new_password(password)
+        db.session.commit()
+        flash('パスワードの更新に成功しました')
+        return redirect(url_for('app.user'))
+    return render_template('change_password.html', form=form)
