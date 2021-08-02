@@ -95,9 +95,9 @@ def forgot_password():
             with db.session.begin(subtransactions=True):
                 token = PasswordResetToken.publish_token(user)
             db.session.commit()
-            reset_url = 'http://127.0.0.1:5000/reset_password/{token}'
+            reset_url = f'http://127.0.0.1:5000/reset_password/{token}'
             print(reset_url)
             flash('パスワード再登録用のURLを発行しました')
         else:
-            flask('存在しないユーザーです')
+            flash('存在しないユーザーです')
     return render_template('forgot_password.html', form=form)
