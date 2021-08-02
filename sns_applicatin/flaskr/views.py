@@ -11,7 +11,8 @@ from flaskr.models import (
 from flaskr import db
 
 from flaskr.forms import (
-    LoginForm, RegisterForm, ResetPasswordForm
+    LoginForm, RegisterForm, ResetPasswordForm,
+    ForgotPasswordForm
 )
 
 bp = Blueprint('app', __name__, url_prefix='')
@@ -83,3 +84,20 @@ def reset_password(token):
         flash('パスワードを更新しました')
         return redirect(url_for('app.login'))
     return render_template('reset_password.html', form=form)
+
+@bp.route('forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    form = ForgotPasswordForm(request.form)
+    if request.method == 'POST' and form.validate():
+        email = form.email.data
+        user = User.select_user_by_email(email)
+        if user:
+            with db.session.begin(subtransactions=True):
+                token = PasswordResetToken.publish_token(user)
+            db.session.commit()
+            reset_url = 'http://127.0.0.1:5000/reset_password/{token}'
+            print(reset_url)
+            flash('パスワード再登録用のURLを発行しました')
+        else:
+            flask('存在しないユーザーです')
+    return render_template('forgot_password.html', form=form)

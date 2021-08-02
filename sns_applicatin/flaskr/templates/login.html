@@ -15,5 +15,8 @@
         {{ render_field(form.confirm_password) }}
         {{ form.submit() }}
     </form>
+    <a href="{{url_for('app.forgot_password')}}">
+        パスワードを忘れた場合
+    </a>
 </div>
 {% endblock %}
