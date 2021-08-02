@@ -6,6 +6,9 @@ from wtforms.fields import (
 )
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms import ValidationError
+from flask_login import current_user
+from flask import flash
+
 from flaskr.models import PasswordResetToken, User
 
 # ログイン用のForm
@@ -54,3 +57,21 @@ class ForgotPasswordForm(Form):
     def validate_email(self, field):
         if not User.select_user_by_email(field.data):
             raise ValidationError('そのメールアドレスは存在しません')
+
+class UserForm(Form):
+    email = StringField(
+        'メール: ', validators=[DataRequired(), Email('メールアドレスが誤っています')]
+    )
+    username = StringField('名前: ', validators=[DataRequired()])
+    picture_path = FileField('ファイルアップロード')
+    submit = SubmitField('登録情報を更新')
+
+    def validate(self):
+        if not super(Form, self).validate():
+            return False
+        user = User.select_user_by_email(self.email.data)
+        if user:
+            if user.id != int(current_user.get_id()):
+                flash('そのメールアドレスはすでに登録されています')
+                return False
+        return True
