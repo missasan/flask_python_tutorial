@@ -93,4 +93,4 @@ class UserSearchForm(Form):
     username = StringField(
         '名前: ', validators=[DataRequired()]
     )
-    subumint = SubmitField('ユーザー検索')
+    submit = SubmitField('ユーザー検索')
