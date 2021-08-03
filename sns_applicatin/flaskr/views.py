@@ -119,10 +119,11 @@ def user():
             user.email = form.email.data
             file = request.files[form.picture_path.name].read()
             if file:
-                file_name = user_id + '_' + str(int(datetime.now().timestamp())) + '.jpg'
-            picture_path = 'flaskr/static/user_image/' + file_name
-            open(picture_path, 'wb').write(file)
-            user.picture_path = 'user_image/' + file_name
+                file_name = user_id + '_' + \
+                    str(int(datetime.now().timestamp())) + '.jpg'
+                picture_path = 'flaskr/static/user_image/' + file_name
+                open(picture_path, 'wb').write(file)
+                user.picture_path = 'user_image/' + file_name
         db.session.commit()
         flash('ユーザー情報の更新に成功しました')
     return render_template('user.html', form=form)
