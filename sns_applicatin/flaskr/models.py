@@ -52,7 +52,7 @@ class User(UserMixin, db.Model):
     @classmethod
     def search_by_name(cls, username):
         return cls.query.filter(
-            cls.usename.like(f'%{username}%'),
+            cls.username.like(f'%{username}%'),
             cls.id != int(current_user.get_id()),
             cls.is_active == True
         ).with_entities(
