@@ -1,7 +1,7 @@
 # models.py
 from flaskr import db, login_manager
 from flask_bcrypt import generate_password_hash, check_password_hash
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 
 from datetime import datetime, timedelta
 from uuid import uuid4
@@ -49,6 +49,16 @@ class User(UserMixin, db.Model):
         self.password = generate_password_hash(new_password)
         self.is_active = True
 
+    @classmethod
+    def search_by_name(cls, username):
+        return cls.query.filter(
+            cls.usename.like(f'%{username}%'),
+            cls.id != int(current_user.get_id()),
+            cls.is_active == True
+        ).with_entities(
+            cls.id, cls.username, cls.picture_path
+        )
+
 # パスワードリセット時に利用する
 class PasswordResetToken(db.Model):
 
@@ -91,7 +101,6 @@ class PasswordResetToken(db.Model):
             return record.user_id
         else:
             return None
-
     
     @classmethod
     def delete_token(cls, token):
