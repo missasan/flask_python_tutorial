@@ -17,7 +17,8 @@ from flaskr import db
 
 from flaskr.forms import (
     LoginForm, RegisterForm, ResetPasswordForm,
-    ForgotPasswordForm, UserForm, ChangePasswordForm
+    ForgotPasswordForm, UserForm, ChangePasswordForm,
+    UserSearchForm
 )
 
 bp = Blueprint('app', __name__, url_prefix='')
@@ -141,6 +142,19 @@ def change_password():
         flash('パスワードの更新に成功しました')
         return redirect(url_for('app.user'))
     return render_template('change_password.html', form=form)
+
+@bp.route('/user_search', methods=['GET', 'POST'])
+@login_required
+def user_search():
+    form = UserSearchForm(request.form)
+    users = None
+    if request.method == 'POST' and form.validate():
+        username = form.username.data
+        users = User.search_by_name(username)
+    return render_template(
+        'user_search.html', form=form, users=users
+    )
+
 
 @bp.app_errorhandler(404)
 def page_not_found(e):
