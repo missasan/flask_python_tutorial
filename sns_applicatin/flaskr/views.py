@@ -4,7 +4,7 @@ from operator import sub
 
 from flask import (
     Blueprint, abort, request, render_template,
-    redirect, url_for, flash
+    redirect, url_for, flash, session
 )
 from flask_login import (
     login_user, login_required, logout_user, current_user
@@ -18,7 +18,7 @@ from flaskr import db
 from flaskr.forms import (
     LoginForm, RegisterForm, ResetPasswordForm,
     ForgotPasswordForm, UserForm, ChangePasswordForm,
-    UserSearchForm
+    UserSearchForm, ConnectForm
 )
 
 bp = Blueprint('app', __name__, url_prefix='')
@@ -147,12 +147,14 @@ def change_password():
 @login_required
 def user_search():
     form = UserSearchForm(request.form)
+    connect_form = ConnectForm()
+    session['url'] = 'app.user_search'
     users = None
     if request.method == 'POST' and form.validate():
         username = form.username.data
         users = User.search_by_name(username)
     return render_template(
-        'user_search.html', form=form, users=users
+        'user_search.html', form=form, connect_form=connect_form, users=users
     )
 
 

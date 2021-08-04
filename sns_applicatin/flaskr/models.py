@@ -1,4 +1,5 @@
 # models.py
+from enum import unique
 from flaskr import db, login_manager
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import UserMixin, current_user
@@ -105,3 +106,22 @@ class PasswordResetToken(db.Model):
     @classmethod
     def delete_token(cls, token):
         cls.query.filter_by(token=str(token)).delete()
+
+class UserConnect(db.Model):
+
+    __tablename__ = 'user_connects'
+
+    id = db.Column(db.Integer, primary_key=True)
+    from_user_id = db.Column(
+        db.Integer, db.ForeignKey('users.id'), index=True
+    ) # どのユーザーからの友達申請か
+    to_user_id = db.Column(
+        db.Integer, db.ForeignKey('users.id'), index=True
+    ) # どのユーザーへの友達申請か
+    status = db.Column(db.Integer, unique=False, default=1) # 1 申請中、2 承認済み
+    create_at = db.Column(db.DateTime, default=datetime.now)
+    update_at = db.Column(db.DateTime, default=datetime.now)
+
+    def __init__(self, from_user_id, to_user_id):
+        self.from_user_id = from_user_id
+        self.to_user_id = to_user_id
