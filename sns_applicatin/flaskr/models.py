@@ -97,31 +97,33 @@ class User(UserMixin, db.Model):
                     UserConnect.status == 2
                 )
             )
-        ).with.entities(
+        ).with_entities(
             cls.id, cls.username, cls.picture_path
         ).all()
     
     @classmethod
     def select_requested_friends(cls):
         return cls.query.join(
+            UserConnect,
             and_(
                 UserConnect.from_user_id == cls.id,
                 UserConnect.to_user_id == current_user.get_id(),
                 UserConnect.status == 1
             )
-        ).with.entities(
+        ).with_entities(
             cls.id, cls.username, cls.picture_path
         ).all()
 
     @classmethod
     def select_requesting_friends(cls):
         return cls.query.join(
+            UserConnect,
             and_(
                 UserConnect.to_user_id == cls.id,
                 UserConnect.from_user_id == current_user.get_id(),
                 UserConnect.status == 1
             )
-        ).with.entities(
+        ).with_entities(
             cls.id, cls.username, cls.picture_path
         ).all()
 
