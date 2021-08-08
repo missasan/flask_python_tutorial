@@ -11,7 +11,7 @@ from flask_login import (
 )
 from wtforms.fields.simple import PasswordField
 from flaskr.models import (
-    User, PasswordResetToken
+    User, PasswordResetToken, UserConnect
 )
 from flaskr import db
 
@@ -163,6 +163,25 @@ def user_search():
         'user_search.html', form=form, connect_form=connect_form, users=users
     )
 
+@bp.route('/connect_user', methods=['POST'])
+@login_required
+def connect_user():
+    form = ConnectForm(request.form)
+    if request.method == 'POST' and form.validate():
+        if form.connect_condition.data == 'connect':
+            new_connect = UserConnect(current_user.get_id(), form.to_user_id.data)
+            with db.session.begin(subtransactions=True):
+                new_connect.create_new_connect()
+            db.session.commit()
+        elif form.connect_condition.data == 'accept':
+            # 相手から自分へのUserConnectを取得
+            connect = UserConnect.select_by_from_user_id(form.to_user_id.data)
+            if connect:
+                with db.session.begin(subtransactions=True):
+                    connect.update_status() # status 1 => 2
+                db.session.commit()
+    next_url = session.pop('url', 'app:home')
+    return redirect(url_for(next_url))
 
 @bp.app_errorhandler(404)
 def page_not_found(e):

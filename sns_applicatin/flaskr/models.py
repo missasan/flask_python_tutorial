@@ -146,3 +146,17 @@ class UserConnect(db.Model):
     def __init__(self, from_user_id, to_user_id):
         self.from_user_id = from_user_id
         self.to_user_id = to_user_id
+    
+    def create_new_connect(self):
+        db.session.add(self)
+    
+    @classmethod
+    def select_by_from_user_id(cls, from_user_id):
+        return cls.query.filter_by(
+            from_user_id = from_user_id,
+            to_user_id = current_user.get_id()
+        ).first()
+
+    def update_status(self):
+        self.status = 2
+        self.update_at = datetime.now()
