@@ -152,7 +152,13 @@ def user_search():
     users = None
     if request.method == 'POST' and form.validate():
         username = form.username.data
+        # 検索結果のユーザーを取得する
         users = User.search_by_name(username)
+        # UserテーブルとUserConnectテーブルを紐付けて、statusを見る
+        # from_user_id = 自分のID, to_user_id = 相手のID, status = 1 自分から友達申請中
+        # to_user_id = 自分のID, from_user_id = 相手のID, status = 1 相手から友達申請中
+        # status = 2の場合、友達申請承認済み
+        # レコードが存在しない場合、友達申請が行われていない
     return render_template(
         'user_search.html', form=form, connect_form=connect_form, users=users
     )
