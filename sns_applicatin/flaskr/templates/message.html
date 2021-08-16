@@ -1,0 +1,29 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends "base.html" %}
+{% block title %}
+メッセージ画面 - {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="row">
+    {% for message in messages %}
+        {% if message.from_user_id == current_user_id %}
+            <div class="speech-bubble-self col-lg-4 offset-7">
+                <p>{{ message.messages }}</p>
+            </div>
+        {% else %}
+            <div class="speech-bubble-dest col-lg-4 offset-1">
+                <p>{{ message.messages }}</p>
+            </div>
+            <div class="col-lg-7"></div>
+        {% endif %}
+    {% endfor %}
+    <div class="col-lg-4 offset-lg-7">
+        <form method="POST">
+            {{ form.csrf_token }}
+            {{ form.to_user_id(value=to_user_id) }}
+            {{ render_field(form.message, cols="50", rows="5") }}
+            {{ form.submit() }}
+        </form>
+    </div>
+</div>
+{% endblock %}
