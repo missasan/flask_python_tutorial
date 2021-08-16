@@ -11,14 +11,15 @@ from flask_login import (
 )
 from wtforms.fields.simple import PasswordField
 from flaskr.models import (
-    User, PasswordResetToken, UserConnect
+    User, PasswordResetToken, UserConnect,
+    Message
 )
 from flaskr import db
 
 from flaskr.forms import (
     LoginForm, RegisterForm, ResetPasswordForm,
     ForgotPasswordForm, UserForm, ChangePasswordForm,
-    UserSearchForm, ConnectForm
+    UserSearchForm, ConnectForm, MessageForm
 )
 
 bp = Blueprint('app', __name__, url_prefix='')
@@ -202,6 +203,14 @@ def message(id):
     if not UserConnect.is_friend(id):
         return redirect(url_for('app.home'))
     form = MessageForm(request.form)
+    messages = Message.get_friend_messages(current_user.get_id(), id)
+    if request.method == 'POST' and form.validate():
+        new_message = Message(current_user.get_id(), id, form.message.date)
+        with db.session.begin(subtransactions=True):
+            new_message.create_message()
+        db.session.commit()
+        return redirect(url_for('app.message', id=id))
+    return render_template('message.html', form=form, messages=messages, to_user_id=id)
 
 @bp.app_errorhandler(404)
 def page_not_found(e):
