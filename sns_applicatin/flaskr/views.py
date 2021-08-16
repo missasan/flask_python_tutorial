@@ -196,6 +196,13 @@ def connect_user():
     next_url = session.pop('url', 'app:home')
     return redirect(url_for(next_url))
 
+@bp.route('/message/<id>', methods=['GET', 'POST'])
+@login_required
+def message(id):
+    if not UserConnect.is_friend(id):
+        return redirect(url_for('app.home'))
+    form = MessageForm(request.form)
+
 @bp.app_errorhandler(404)
 def page_not_found(e):
     return redirect(url_for('app.home'))
