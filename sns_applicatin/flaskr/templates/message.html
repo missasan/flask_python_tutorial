@@ -6,15 +6,15 @@
 {% block content %}
 <div class="row">
     {% for message in messages %}
-        {% if message.from_user_id == current_user_id %}
-            <div class="speech-bubble-self col-lg-4 offset-7">
-                <p>{{ message.messages }}</p>
-            </div>
+    {% if message.from_user_id == current_user.id %}
+        <div class="speech-bubble-self col-lg-4 offset-lg-7">
+            <p>{{ message.message }}</p>
+        </div>
         {% else %}
-            <div class="speech-bubble-dest col-lg-4 offset-1">
-                <p>{{ message.messages }}</p>
-            </div>
-            <div class="col-lg-7"></div>
+        <div class="speech-bubble-dest col-lg-4 offset-lg-1">
+            <p>{{ message.message }}</p>
+        </div>
+        <div class="col-lg-7"></div>
         {% endif %}
     {% endfor %}
     <div class="col-lg-4 offset-lg-7">
