@@ -8,6 +8,11 @@
     height: 100px;
 }
 
+.user-image-mini{
+    width: 50px;
+    height: 50px;
+}
+
 .speech-bubble-dest {
 	position: relative;
 	background: #aec0c2;
@@ -47,3 +52,4 @@
 	margin-top: -13px;
 	margin-right: -13px;
 }
+
