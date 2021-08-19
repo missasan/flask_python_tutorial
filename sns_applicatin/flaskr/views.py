@@ -205,7 +205,7 @@ def message(id):
     form = MessageForm(request.form)
     messages = Message.get_friend_messages(current_user.get_id(), id)
     if request.method == 'POST' and form.validate():
-        new_message = Message(current_user.get_id(), id, form.message.date)
+        new_message = Message(current_user.get_id(), id, form.message.data)
         with db.session.begin(subtransactions=True):
             new_message.create_message()
         db.session.commit()

@@ -233,10 +233,10 @@ class Message(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     from_user_id = db.Column(
-        db.Integer,db.ForeignKey('users.id'), index=True
+        db.Integer, db.ForeignKey('users.id'), index=True
     )
     to_user_id = db.Column(
-        db.Integer, db.ForeignKey('Users.id'), index=True
+        db.Integer, db.ForeignKey('users.id'), index=True
     )
     is_read = db.Column(
         db.Boolean, default=False
