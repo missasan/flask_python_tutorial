@@ -204,13 +204,18 @@ def message(id):
         return redirect(url_for('app.home'))
     form = MessageForm(request.form)
     messages = Message.get_friend_messages(current_user.get_id(), id)
+    user = User.select_user_by_id(id)
     if request.method == 'POST' and form.validate():
         new_message = Message(current_user.get_id(), id, form.message.data)
         with db.session.begin(subtransactions=True):
             new_message.create_message()
         db.session.commit()
         return redirect(url_for('app.message', id=id))
-    return render_template('message.html', form=form, messages=messages, to_user_id=id)
+    return render_template(
+        'message.html', form=form,
+        messages=messages, to_user_id=id,
+        user=user
+    )
 
 @bp.app_errorhandler(404)
 def page_not_found(e):
