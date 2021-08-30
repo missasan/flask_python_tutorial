@@ -4,7 +4,7 @@ from operator import sub
 
 from flask import (
     Blueprint, abort, request, render_template,
-    redirect, url_for, flash, session
+    redirect, url_for, flash, session, jsonify
 )
 from flask_login import (
     login_user, login_required, logout_user, current_user
@@ -221,6 +221,14 @@ def message(id):
         messages=messages, to_user_id=id,
         user=user
     )
+
+@bp.route('/message_ajax', methods=['GET'])
+@login_required
+def message_ajax():
+    user_id = request.args.get('user_id', -1, type=int)
+    # まだ読んでいない相手からのメッセージを取得
+
+    return jsonify(data='<p>hello</p>')
 
 @bp.app_errorhandler(404)
 def page_not_found(e):
