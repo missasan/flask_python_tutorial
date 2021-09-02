@@ -1,5 +1,6 @@
 # models.py
 from enum import unique
+from types import ClassMethodDescriptorType
 
 from sqlalchemy.sql.elements import False_
 from flaskr import db, login_manager
@@ -276,3 +277,13 @@ class Message(db.Model):
             {'is_read': 1},
             synchronize_session='fetch'
         )
+    
+    @classmethod
+    def select_not_read_messages(cls, from_user_id, to_user_id):
+        return cls.query.filter(
+            and_(
+                cls.from_user_id == from_user_id,
+                cls.to_user_id == to_user_id,
+                cls.is_read == 0
+            )
+        ).order_by(cls.id).all()
