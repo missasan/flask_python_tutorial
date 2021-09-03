@@ -229,8 +229,8 @@ def message_ajax():
     user_id = request.args.get('user_id', -1, type=int)
     # まだ読んでいない相手からのメッセージを取得
     user = User.select_user_by_id(user_id)
-    not_read_messages = Message.select_not_read_messages(user_id, current_user.get_())
-    not_read_messages_id = [message.id for message in not_read_messages]
+    not_read_messages = Message.select_not_read_messages(user_id, current_user.get_id())
+    not_read_message_ids = [message.id for message in not_read_messages]
     if not_read_message_ids:
         with db.session.begin(subtransactions=True):
             Message.update_is_read_by_ids(not_read_message_ids)
