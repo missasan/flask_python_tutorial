@@ -204,9 +204,18 @@ def message(id):
     if not UserConnect.is_friend(id):
         return redirect(url_for('app.home'))
     form = MessageForm(request.form)
+    # 自分と相手のやり取りのメッセージを取得
     messages = Message.get_friend_messages(current_user.get_id(), id)
     user = User.select_user_by_id(id)
+    # まだ読まれていないが、新たに読まれるメッセージ
     read_message_ids = [ message.id for message in messages if ( not message.is_read) and (message.from_user_id == int(id)) ]
+    # すでに読まれていて、かつまだチェックしていない自分のメッセージをチェックする
+    not_checked_message_ids = [message.id for messages in message.is_read and (not message.is_checked) and (message.from_user_id == int(current_user.get_id()))]
+    if not_checked_message_ids:
+        with db.session(subtnsactions=True):
+            Message.update_is_checked_by_ids(not_checked_message_ids)
+        db.session.commit()
+    # read_message_idsのis_readをTrueに変更
     if read_message_ids:
         with db.session.begin(subtransactions=True):
             Message.update_is_read_by_ids(read_message_ids)

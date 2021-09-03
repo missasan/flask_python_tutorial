@@ -242,6 +242,10 @@ class Message(db.Model):
     is_read = db.Column(
         db.Boolean, default=False
     )
+    # 既読のものを確認したか
+    is_checked = db.Column(
+        db.Boolean, default=False
+    )
     message = db.Column(
         db.Text
     )
@@ -278,6 +282,13 @@ class Message(db.Model):
             synchronize_session='fetch'
         )
     
+    @classmethod
+    def update_is_checked_by_ids(cls, ids):
+        cls.query.filter(cls.id.in_(ids)).update(
+            {'is_checked': 1},
+            synchronize_session='fetch'
+        )
+
     @classmethod
     def select_not_read_messages(cls, from_user_id, to_user_id):
         return cls.query.filter(
