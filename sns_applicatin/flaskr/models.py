@@ -298,3 +298,14 @@ class Message(db.Model):
                 cls.is_read == 0
             )
         ).order_by(cls.id).all()
+    
+    @classmethod
+    def select_not_checked_messages(cls, from_user_id, to_user_id):
+        return cls.query.filter(
+            and_(
+                cls.from_user_id == from_user_id,
+                cls.to_user_id == to_user_id,
+                cls.is_read == 1,
+                cls.is_checked == 0
+            )
+        ).order_by(cls.id).all()
