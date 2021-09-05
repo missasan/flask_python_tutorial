@@ -13,6 +13,7 @@
         scroll.scrollTop = scroll.scrollHeight;
     });
     user_id = "{{ to_user_id }}";
+    offset_value = 1;
     function get_new_messages(){
         $.getJSON("/message_ajax", {
             user_id: user_id
@@ -24,8 +25,19 @@
             }
         });
     };
+    function load_old_messages(){
+        $.getJSON("/load_old_messages",{
+            user_id: user_id,
+            offset_value: offset_value
+        }, function(data){
+
+        });
+    };
 </script>
 <div class="row">
+    <div id="load_message_button" class="col-12">
+        <button class="col-12 btn btn-light btun-outline-primary" onclick="load_old_messages();">100件読み込む</button>
+    </div>
     {% for message in messages|reverse %}
         {% if message.from_user_id == current_user.id %}
         <div id="self-message-tag-{{message.id}}" class="col-lg-1 offset-lg-6 col-md-1 offset-md-2 col-sm-1 offset-sm-1 col-1">
@@ -34,8 +46,8 @@
             {% endif %}
         </div>
         <div class="speech-bubble-self col-lg-4 col-md-8 col-sm-8 col-9">
-            {% for splited_message in message.message | replace_newline %}
-                <p>{{ splited_message | urlize }}</p>
+            {% for splitted_message in message.message | replace_newline %}
+                <p>{{ splitted_message | urlize }}</p>
             {% endfor %}
         </div>
         <div class="col-lg-1 col-md-1 col-sm-2 col-2">
@@ -46,8 +58,8 @@
         </div>
         {% else %}
         <div class="speech-bubble-dest col-lg-4 col-md-8 col-sm-8 col-9">
-            {% for splited_message in message.message | replace_newline %}
-                <p>{{ splited_message | urlize }}</p>
+            {% for splitted_message in message.message | replace_newline %}
+                <p>{{ splitted_message | urlize }}</p>
             {% endfor %}
         </div>
         <div class="col-lg-1 col-md-1 col-sm-2 col-2">

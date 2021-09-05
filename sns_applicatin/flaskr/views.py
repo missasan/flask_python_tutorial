@@ -21,7 +21,7 @@ from flaskr.forms import (
     ForgotPasswordForm, UserForm, ChangePasswordForm,
     UserSearchForm, ConnectForm, MessageForm
 )
-from flaskr.utils.message_format import make_message_format
+from flaskr.utils.message_format import make_message_format, make_old_message_format
 
 bp = Blueprint('app', __name__, url_prefix='')
 
@@ -252,7 +252,17 @@ def message_ajax():
             Message.update_is_checked_by_ids(not_checked_message_ids)
         db.session.commit()
     return jsonify(data=make_message_format(user, not_read_messages), checked_message_ids = not_checked_message_ids)
-    
+
+@bp.route('/load_old_messages', methods=['GET'])
+@login_required
+def load_old_messages():
+    user_id = request.args.get('user_id', -1, type=int)
+    offset_value = request.args.get('offset_value', -1, type=int)
+    if user_id == -1 or offset_value == -1:
+        return
+    messages = Message.get_friend_messages(current_user.get_id(), user_id, offset_value * 100)
+    user = User.select_user_by_id(user_id)
+    return jsonify(data=make_old_message_format(user, messages))
 
 @bp.app_errorhandler(404)
 def page_not_found(e):
