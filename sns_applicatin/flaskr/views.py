@@ -210,9 +210,9 @@ def message(id):
     # まだ読まれていないが、新たに読まれるメッセージ
     read_message_ids = [ message.id for message in messages if ( not message.is_read) and (message.from_user_id == int(id)) ]
     # すでに読まれていて、かつまだチェックしていない自分のメッセージをチェックする
-    not_checked_message_ids = [message.id for messages in message.is_read and (not message.is_checked) and (message.from_user_id == int(current_user.get_id()))]
+    not_checked_message_ids = [message.id for message in messages if message.is_read and (not message.is_checked) and (message.from_user_id == int(current_user.get_id()))]
     if not_checked_message_ids:
-        with db.session(subtnsactions=True):
+        with db.session.begin(subtransactions=True):
             Message.update_is_checked_by_ids(not_checked_message_ids)
         db.session.commit()
     # read_message_idsのis_readをTrueに変更
@@ -244,7 +244,15 @@ def message_ajax():
         with db.session.begin(subtransactions=True):
             Message.update_is_read_by_ids(not_read_message_ids)
         db.session.commit()
-    return jsonify(data=make_message_format(user, not_read_messages))
+    # すでに読まれた自分のメッセージでまだチェックしていないものを取得
+    not_checked_messages = Message.select_not_checked_messages(current_user.get_id(), user_id)
+    not_checked_message_ids = [not_checked_message.id for not_checked_message in not_checked_messages]
+    if not_checked_message_ids:
+        with db.session.begin(subtransactions=True):
+            Message.update_is_checked_by_ids(not_checked_message_ids)
+        db.session.commit()
+    return jsonify(data=make_message_format(user, not_read_messages), checked_message_ids = not_checked_message_ids)
+    
 
 @bp.app_errorhandler(404)
 def page_not_found(e):
