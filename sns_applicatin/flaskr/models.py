@@ -57,7 +57,7 @@ class User(UserMixin, db.Model):
 
     # UserConnectと紐付ける
     @classmethod
-    def search_by_name(cls, username):
+    def search_by_name(cls, username, page=1):
         # from_user_id: 検索相手のID、to_user_id: ログインユーザーのIDで紐付ける
         user_connect1 = aliased(UserConnect)
         # to_user_id: 検索相手のID、from_user_id: ログインユーザーのIDで紐付ける
@@ -82,7 +82,7 @@ class User(UserMixin, db.Model):
             cls.id, cls.username, cls.picture_path,
             user_connect1.status.label("joined_status_to_from"),
             user_connect2.status.label("joined_status_from_to")
-        ).all()
+        ).order_by(cls.username).paginate(page, 50, False)
     
     @classmethod
     def select_friends(cls):
